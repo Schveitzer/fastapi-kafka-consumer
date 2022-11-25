@@ -7,7 +7,7 @@ message broker (in this case Kafka).
 
 One example of this could be a Web API, that is recivied user data and process asynchronously, enabling the processing and storage of a amount of information without impacting the user.
 
-![alt text](https://github.com/Schveitzer/fastapi-kafka-consumer/api_diagram.png?raw=true)
+![alt text](https://github.com/Schveitzer/fastapi-kafka-consumer/blob/master/api_diagram.png?raw=true)
 
 ## Technologies
 
