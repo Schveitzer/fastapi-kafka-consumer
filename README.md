@@ -2,15 +2,12 @@
 
 This project shows how to use a **Kafka Consumer** inside a Python Web API built using 
 **FastAPI**. This can be very useful for use cases where one is building a Web API that 
-needs to have some state, and that the state is updated by receiving a message from a 
+needs updated by receiving a message from a 
 message broker (in this case Kafka).
 
-One example of this could be a ML Web API, that is serving requests for performing 
-inferences according to the *current* model. Often, this model will be updated over time
-as the model gets retrained according to a given schedule or after model/data drift job 
-has been executed. Therefore, one solution could be to notify the Web API by sending a 
-message with either the new model or some metadata that will enable the API to fetch the
-new model.
+One example of this could be a Web API, that is recivied user data and process asynchronously, enabling the processing and storage of a amount of information without impacting the user.
+
+![alt text](https://github.com/Schveitzer/[reponame]/api_diagram.png?raw=true)
 
 ## Technologies
 
@@ -36,56 +33,40 @@ Start the Web API by running:
 
 ```bash
 $ python main.py
-``` 
+```
 
-Finally, send a message by running the `producer.py`:
+Send a user data using `POST` request on the `/user`, then producer sends data to kfaka topic. One can confirm that the state of the
+Web API is being updated with user data by performing a `GET` request on the `/last_user` endpoint.
 
-```bash
-$ python producer.py
+POST:
+```
+curl --location --request POST 'http://localhost:8000/user' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "data": {
+        "Name": "Alan",
+        "email": "alan.schveitzer@gmail.com"
+    }
+}'
+```
+
+GET:
+```
+curl --location --request GET 'http://localhost:8000/last_user'
 ```
 
 <details>
     <summary>Result</summary>
 
-    ```
-    Sending message with value: {'message_id': '4142', 'text': 'some text', 'state': 96}
-    ```
-
-</details>
-
-
-The producer sends a message with a field `state` that is used in this demonstration for
-showing how the state of the Web API can be updated. One can confirm that the state of the
-Web API is being updated by performing a `GET` request on the `/state` endpoint.
-
 ```
-curl http://localhost:8000/state
+{
+    "status": "SUCESS",
+    "user": {
+        "name": "Alan",
+        "email": "mail@gmail.co"
+    }
+}
 ```
-
-<details>
-    <summary>Result before sending message</summary>
-
-    ```
-    {"state":0}
-    ```
-
 </details>
 
-<details>
-    <summary>Result after sending message</summary>
-
-    ```
-    {"state":23}
-    ```    
-    The actual value will vary given it's a random number.
-</details>
-
-
-## Consumer Initialization
-
-During the initialization process of the Consumer the log end offset is checked to determine whether there are messages already in the topic. If so, the consumer will *seek* to this offset so that it can read the last committed message in this topic.
-
-This is useful to guarantee that the consumer does not miss on previously published messages, either because they were published before the consumer was up, or because the Web API has been down for some time. For this use case, we consider that only the most recent `state` matters, and thereby, we only care about the last committed message.
-
-Each instance of the Web API will have it's own consumer group (they share the same group name prefix + a random id), so that each instance of the API receives the same `state` updates.
-  
+## Integration tests
