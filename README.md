@@ -1,6 +1,6 @@
 # FastAPI with Kafka Consumer
 
-This project shows how to use a **Kafka Consumer** inside a Python Web API built using 
+This project shows how to use a **Kafka data stream** inside a Python Web API built using 
 **FastAPI**. This can be very useful for use cases where one is building a Web API that 
 needs updated by receiving a message from a 
 message broker (in this case Kafka).
