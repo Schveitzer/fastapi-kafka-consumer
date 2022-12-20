@@ -2,8 +2,6 @@
 from ast import Set
 from asyncore import loop
 import json
-import logging
-import threading
 from aiokafka import TopicPartition
 import aiokafka
 import requests
@@ -11,8 +9,6 @@ import pytest
 from http import HTTPStatus
 from kafka import KafkaConsumer
 import asyncio
-import logging
-import time
 
 class IntegrationTests:
 
