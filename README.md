@@ -70,3 +70,9 @@ curl --location --request GET 'http://localhost:8000/last_user'
 </details>
 
 ## Integration tests
+
+To run the tests:
+
+```bash
+$ pytest -vv -p no:cacheprovider -W ignore::DeprecationWarning
+```
