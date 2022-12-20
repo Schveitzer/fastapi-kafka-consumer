@@ -1,4 +1,4 @@
-# FastAPI with Kafka Consumer
+# FastAPI with Kafka and integration Tests
 
 This project shows how to use a **Kafka data stream** inside a Python Web API built using 
 **FastAPI**. This can be very useful for use cases where one is building a Web API that 
