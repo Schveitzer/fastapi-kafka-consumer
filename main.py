@@ -1,6 +1,7 @@
 from typing import Set, Any
 from fastapi import FastAPI, Request
-from kafka import TopicPartition
+from kafka import TopicPartition, errors
+from kafka.admin import KafkaAdminClient, NewTopic
 
 import uvicorn
 import aiokafka
@@ -56,7 +57,7 @@ async def state():
             "user": _last_message}
 
 
-@app.post("/user")
+@app.post("/user", status_code=201)
 async def create_message(user_data: Request):
     user_data = await user_data.body()
     await send_message(producer, user_data)
@@ -64,6 +65,21 @@ async def create_message(user_data: Request):
 
 
 async def initialize():
+
+    try:
+        # Create topic
+
+        admin_client = KafkaAdminClient(
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS, 
+        client_id='test'
+        )
+
+        topic_list = []
+        topic_list.append(NewTopic(name=KAFKA_TOPIC, num_partitions=1, replication_factor=1))
+        admin_client.create_topics(new_topics=topic_list, validate_only=False)
+    except errors.TopicAlreadyExistsError:
+        pass
+
     loop = asyncio.get_event_loop()
 
     global producer
